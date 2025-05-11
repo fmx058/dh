@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义导航面板</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 10px; /* 调整内边距 */
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 700px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #1a237e;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 26px;
+            text-align: center;
+        }
+
+        /* 添加链接表单 */
+        .add-link-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e8eaf6; /* 表单区域浅色背景 */
+            border-radius: 8px;
+        }
+
+        .add-link-form h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #283593;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #3f51b5;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="url"] {
+            width: calc(100% - 22px); /* 减去内边距和边框 */
+            padding: 10px;
+            border: 1px solid #c5cae9;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="url"]:focus {
+            border-color: #3949ab;
+            outline: none;
+        }
+
+        .add-button {
+            background-color: #3949ab;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .add-button:hover {
+            background-color: #283593;
+        }
+
+        /* 链接列表 */
+        .link-items-container {
+            display: grid;
+            grid-template-columns: 1fr; /* 默认单列 */
+            gap: 15px;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f9f9f9; /* 每个链接项的背景 */
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: box-shadow 0.3s ease;
+        }
+        .link-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+
+        .main-link-button {
+            flex-grow: 1; /* 占据大部分空间 */
+            background-color: #5c6bc0; /* 链接按钮颜色 */
+            color: white;
+            padding: 12px 15px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+            margin-right: 10px; /* 与删除按钮的间距 */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .main-link-button:hover {
+            background-color: #3f51b5;
+            transform: translateY(-1px);
+        }
+
+        .delete-button {
+            background-color: #ef5350; /* 删除按钮红色 */
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            flex-shrink: 0; /* 防止删除按钮被压缩 */
+        }
+
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #757575;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        /* 响应式：中等屏幕以上两列 */
+        @media (min-width: 768px) {
+            .link-items-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>自定义导航面板</h1>
+
+        <div class="add-link-form">
+            <h2>添加新链接</h2>
+            <div class="form-group">
+                <label for="linkName">网页名称：</label>
+                <input type="text" id="linkName" placeholder="例如：搜索引擎">
+            </div>
+            <div class="form-group">
+                <label for="linkUrl">网页网址：</label>
+                <input type="url" id="linkUrl" placeholder="例如：https://www.google.com">
+            </div>
+            <button id="addLinkButton" class="add-button">添加链接</button>
+        </div>
+
+        <div id="linkItemsContainer" class="link-items-container">
+            </div>
+
+        <p class="footer-note">
+            提示：您添加或删除的链接信息将保存在当前浏览器的本地存储中。清除浏览器数据可能会导致自定义内容丢失。
+        </p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const linkNameInput = document.getElementById('linkName');
+            const linkUrlInput = document.getElementById('linkUrl');
+            const addLinkButton = document.getElementById('addLinkButton');
+            const linkItemsContainer = document.getElementById('linkItemsContainer');
+
+            const defaultLinks = [
+                { name: "食堂实时监控", url: "https://mclz.173blogs.top" },
+                { name: "彩票号码生成器", url: "https://yh.173blogs.top" },
+                { name: "大乐透号码生成器", url: "https://lottery.173blogs.top" },
+                { name: "生肖年份数字参考", url: "https://six.173blogs.top" },
+                { name: "笔记本", url: "https://note.173blogs.top" }
+            ];
+
+            let links = [];
+
+            function loadLinks() {
+                const storedLinks = localStorage.getItem('customNavigationLinks');
+                if (storedLinks) {
+                    links = JSON.parse(storedLinks);
+                } else {
+                    links = [...defaultLinks]; // 如果没有存储的链接，使用默认链接
+                }
+            }
+
+            function saveLinks() {
+                localStorage.setItem('customNavigationLinks', JSON.stringify(links));
+            }
+
+            function renderLinks() {
+                linkItemsContainer.innerHTML = ''; // 清空现有链接
+
+                if (links.length === 0) {
+                    linkItemsContainer.innerHTML = '<p style="color: #757575; text-align: center; grid-column: 1 / -1;">暂无链接，请通过上方表单添加。</p>';
+                    return;
+                }
+
+                links.forEach((link, index) => {
+                    const linkItemDiv = document.createElement('div');
+                    linkItemDiv.classList.add('link-item');
+
+                    const anchor = document.createElement('a');
+                    anchor.classList.add('main-link-button');
+                    anchor.href = link.url;
+                    anchor.textContent = link.name;
+                    anchor.target = '_blank'; // 在新标签页打开
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.classList.add('delete-button');
+                    deleteBtn.textContent = '删除';
+                    deleteBtn.onclick = () => deleteLink(index);
+
+                    linkItemDiv.appendChild(anchor);
+                    linkItemDiv.appendChild(deleteBtn);
+                    linkItemsContainer.appendChild(linkItemDiv);
+                });
+            }
+
+            function addLink() {
+                const name = linkNameInput.value.trim();
+                const url = linkUrlInput.value.trim();
+
+                if (!name || !url) {
+                    alert('网页名称和网址均不能为空！');
+                    return;
+                }
+
+                // 简单URL验证 (确保至少包含 http:// 或 https://)
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    alert('请输入有效的网址，必须以 http:// 或 https:// 开头。');
+                    return;
+                }
+                
+                // 检查是否已存在同名或同URL的链接
+                if (links.some(link => link.name === name || link.url === url)) {
+                    if (!confirm('已存在相似名称或相同网址的链接，确定要继续添加吗？')) {
+                        return;
+                    }
+                }
+
+
+                links.push({ name, url });
+                saveLinks();
+                renderLinks();
+
+                linkNameInput.value = ''; // 清空输入框
+                linkUrlInput.value = '';
+            }
+
+            function deleteLink(index) {
+                if (confirm(`确定要删除链接 "${links[index].name}" 吗？`)) {
+                    links.splice(index, 1);
+                    saveLinks();
+                    renderLinks();
+                }
+            }
+
+            // 初始化
+            addLinkButton.addEventListener('click', addLink);
+            loadLinks();
+            renderLinks();
+        });
+    </script>
+</body>
+</html>
